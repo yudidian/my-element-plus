@@ -26,6 +26,56 @@
     :data-prefix="ns.namespace.value"
     @mouseleave="handleMouseLeave()"
   >
+    <div
+      v-if="isShowExport"
+      class="export-content"
+      style="
+        width: 100%;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      "
+    >
+      <el-upload
+        action=""
+        multiple
+        :show-file-list="false"
+        accept=".xls,.XLS,.xlsx,.XLSX,.csv"
+        :http-request="httpRequest"
+        style="margin-right: 10px"
+      >
+        <el-button type="success" size="small">数据导入</el-button>
+      </el-upload>
+      <el-button
+        type="primary"
+        size="small"
+        class="export-btn"
+        @click="
+          QueryLastOnlyIdExport(
+            fileName,
+            'xlsx',
+            data,
+            store.states.columns.value
+          )
+        "
+        >导出Excel</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        class="export-btn"
+        @click="
+          QueryLastOnlyIdExport(
+            fileName,
+            'csv',
+            data,
+            store.states.columns.value
+          )
+        "
+        >导出CSV</el-button
+      >
+    </div>
     <div :class="ns.e('inner-wrapper')" :style="tableInnerStyle">
       <div ref="hiddenColumns" class="hidden-columns">
         <slot />
@@ -146,9 +196,12 @@
 // @ts-nocheck
 import { computed, defineComponent, getCurrentInstance, provide } from 'vue'
 import { debounce } from 'lodash-unified'
+import { ElMessage } from 'element-plus'
 import { Mousewheel } from '@element-plus/directives'
 import { useLocale, useNamespace } from '@element-plus/hooks'
 import ElScrollbar from '@element-plus/components/scrollbar'
+import ElButton from '@element-plus/components/button'
+import ElUpload from '@element-plus/components/upload'
 import { createStore } from './store/helper'
 import TableLayout from './table-layout'
 import TableHeader from './table-header'
@@ -160,7 +213,7 @@ import defaultProps from './table/defaults'
 import { TABLE_INJECTION_KEY } from './tokens'
 import { hColgroup } from './h-helper'
 import { useScrollbar } from './composables/use-scrollbar'
-
+import type { UploadRequestOptions } from 'element-plus'
 import type { Table } from './table/defaults'
 
 let tableIdSeed = 1
@@ -174,6 +227,8 @@ export default defineComponent({
     TableBody,
     TableFooter,
     ElScrollbar,
+    ElButton,
+    ElUpload,
     hColgroup,
   },
   props: defaultProps,
@@ -228,6 +283,8 @@ export default defineComponent({
       toggleRowExpansion,
       clearSort,
       sort,
+      QueryLastOnlyIdExport,
+      importData,
     } = useUtils<Row>(store)
     const {
       isHidden,
@@ -270,7 +327,29 @@ export default defineComponent({
     const computedEmptyText = computed(() => {
       return props.emptyText || t('el.table.emptyText')
     })
-
+    const httpRequest = (options: UploadRequestOptions) => {
+      const file = options.file // 文件信息
+      if (!file) {
+        return false
+      } else if (!/\.(xls|xlsx|.csv)$/.test(file.name.toLowerCase())) {
+        ElMessage.error('文件类型错误')
+        return false
+      }
+      const fileReader = new FileReader()
+      fileReader.onload = (ev) => {
+        try {
+          const fileData: string | ArrayBuffer = ev.target.result
+          store.states.data.value = importData(
+            fileData,
+            store.states.columns.value
+          )
+          store.scheduleLayout(true)
+        } catch {
+          return false
+        }
+      }
+      fileReader.readAsBinaryString(file)
+    }
     return {
       ns,
       layout,
@@ -313,6 +392,8 @@ export default defineComponent({
       scrollTo,
       setScrollLeft,
       setScrollTop,
+      QueryLastOnlyIdExport,
+      httpRequest,
     }
   },
 })

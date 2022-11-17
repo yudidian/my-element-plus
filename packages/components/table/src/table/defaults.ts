@@ -186,6 +186,14 @@ export default {
     type: Boolean,
     default: true,
   },
+  isShowExport: {
+    type: Boolean,
+    default: false,
+  },
+  fileName: {
+    type: String,
+    default: () => '文件',
+  },
   stripe: Boolean,
   border: Boolean,
   rowKey: [String, Function] as PropType<TableProps<DefaultRow>['rowKey']>,
