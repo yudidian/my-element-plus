@@ -188,7 +188,7 @@ export default {
   },
   isShowExport: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   fileName: {
     type: String,
