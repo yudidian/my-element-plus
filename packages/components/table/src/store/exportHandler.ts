@@ -8,24 +8,24 @@ export const exportExcel = (
   tableData: Array<any>,
   tableColumns: Array<any>
 ) => {
+  //表格头部数据
   const ExcelHeader: any = []
+  // 表格对顶table props的值
+  const ExcelProps: any = {}
   for (let i = 0; i < tableColumns.length!; i++) {
     if (tableColumns[i].type !== 'default') continue
     if (tableColumns[i].property === undefined) continue
     ExcelHeader.push([tableColumns[i].label])
+    ExcelProps[tableColumns[i].property] = tableColumns[i].property
   }
+  ExcelHeader.unshift(['序号'])
   const lstData: any = []
-  const reg = /[a-zA-Z]+/
+  const reg = /^\d+$/
   for (const datum of tableData) {
     const rowData: Array<any> = []
-    for (const dataKey in datum) {
-      if (
-        !reg.test(datum[dataKey]) &&
-        new Date(datum[dataKey]).toLocaleString() !== '1970/1/1 08:00:00'
-      ) {
-        rowData.push(
-          dayjs(new Date(datum[dataKey])).format('YYYY-MM-DD hh:mm:ss')
-        )
+    for (const dataKey in ExcelProps) {
+      if (reg.test(datum[dataKey]) && datum[dataKey].toString().length === 13) {
+        rowData.push(dayjs(new Date(datum[dataKey])).format('YYYY-MM-DD H:m:s'))
       } else {
         rowData.push(datum[dataKey])
       }
@@ -33,10 +33,11 @@ export const exportExcel = (
     lstData.push(rowData)
   }
   const lstSheet: Array<any> = []
-  ExcelUtil.writeHeader(ExcelHeader, undefined, 1)
   for (let num = 1; num <= ExcelHeader.length; num++) {
+    ExcelUtil.writeHeader(ExcelHeader)
     for (let i = 0, rowIndex = 1; i < lstData.length; i++, rowIndex++) {
       let colIndex = 0
+      ExcelUtil.writeCellData(rowIndex, colIndex++, `${i + 1}`)
       for (let j = 0; j < lstData[i].length; j++) {
         ExcelUtil.writeCellData(rowIndex, colIndex++, lstData[i][j])
       }
@@ -44,8 +45,10 @@ export const exportExcel = (
     const sheet = ExcelUtil.getDataSheet()
     lstSheet.push({ sheet, name: `Sheet${num}` })
   }
-
-  ExcelUtil.write(lstSheet, `${fileName}.${type}`)
+  ExcelUtil.write(
+    lstSheet,
+    `${fileName}${dayjs(new Date()).format('YYYY-MM-DD hh:mm:ss')}.${type}`
+  )
 }
 export const importExcel = (data: any, columns: Array<any>): Array<any> => {
   const lstData: Array<any> = ExcelUtil.toMap(data, 0)

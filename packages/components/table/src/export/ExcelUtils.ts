@@ -196,9 +196,11 @@ export class ExcelUtil {
   //样式列表初始化
   private static initCellStyle(): void {
     const lstColor = ['F2F2F2', 'FAFAFA', 'D4D4D4']
-    this.lstCellStyle.push(this.chooseCellStyle(lstColor, 0))
-    this.lstCellStyle?.push(this.chooseCellStyle(lstColor, 1))
-    this.lstCellStyle.push(this.chooseCellStyle(lstColor, 2))
+    this.lstCellStyle.push(
+      this.chooseCellStyle(lstColor, 0),
+      this.chooseCellStyle(lstColor, 1),
+      this.chooseCellStyle(lstColor, 2)
+    )
   }
 
   //单元格样式选择
@@ -379,7 +381,7 @@ export class ExcelUtil {
 
   //自动设置列宽
   private static getWidthColByAuto(col: number, value: string): number {
-    let widthCol = this.lstColInfo[col].wch || 0
+    let widthCol = this.lstColInfo[col]?.wch || 0
     const tempWidthCol = this.getWidthCol(value)
     if (widthCol < tempWidthCol) {
       widthCol = tempWidthCol
@@ -392,7 +394,7 @@ export class ExcelUtil {
     let chineseSum = 0
     let englishSum = 0
     let charSum = 0
-    for (let i = 0; i < value.length; i++) {
+    for (let i = 0; i < value?.length; i++) {
       if (this.isChineseChar(value.charCodeAt(i))) {
         chineseSum += 2
         charSum += 2
