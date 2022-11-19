@@ -1,6 +1,6 @@
 // @ts-nocheck
+import { exportExcel, importExcel } from '../store/exportHandler'
 import type { Store } from '../store'
-
 function useUtils<T>(store: Store<T>) {
   const setCurrentRow = (row: T) => {
     store.commit('setCurrentRow', row)
@@ -30,7 +30,17 @@ function useUtils<T>(store: Store<T>) {
   const sort = (prop: string, order: string) => {
     store.commit('sort', { prop, order })
   }
-
+  const QueryLastOnlyIdExport = (
+    fileName: string,
+    type: string,
+    tableData: Array<T>,
+    tableColumns: Array<T>
+  ) => {
+    exportExcel(fileName, type, tableData, tableColumns)
+  }
+  const importData = (data: any, columns: any) => {
+    return importExcel(data, columns)
+  }
   return {
     setCurrentRow,
     getSelectionRows,
@@ -41,6 +51,8 @@ function useUtils<T>(store: Store<T>) {
     toggleRowExpansion,
     clearSort,
     sort,
+    QueryLastOnlyIdExport,
+    importData,
   }
 }
 

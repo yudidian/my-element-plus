@@ -9,10 +9,9 @@ import {
   orderBy,
   toggleRowStatus,
 } from '../util'
-import useExpand from './expand'
-import useCurrent from './current'
 import useTree from './tree'
-
+import useCurrent from './current'
+import useExpand from './expand'
 import type { Ref } from 'vue'
 import type { TableColumnCtx } from '../table-column/defaults'
 import type { Table, TableRefs } from '../table/defaults'
@@ -472,7 +471,6 @@ function useWatcher<T>() {
       toggleTreeExpansion(row, expanded)
     }
   }
-
   return {
     assertRowKey,
     updateColumns,
