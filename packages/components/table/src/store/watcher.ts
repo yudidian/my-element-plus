@@ -45,6 +45,7 @@ const doFlattenColumns = (columns) => {
 }
 
 function useWatcher<T>() {
+  const myColumns = ref<T[]>([])
   const instance = getCurrentInstance() as Table<T>
   const { size: tableSize } = toRefs(instance.proxy?.$props as any)
   const rowKey: Ref<string> = ref(null)
@@ -502,6 +503,7 @@ function useWatcher<T>() {
     loadOrToggle,
     updateTreeData,
     states: {
+      myColumns,
       tableSize,
       rowKey,
       data,

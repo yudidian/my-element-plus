@@ -69,6 +69,7 @@ export default defineComponent({
       await nextTick()
       await nextTick()
       const { prop, order } = props.defaultSort
+      parent?.store.commit('setMyColumns', columnRows)
       parent?.store.commit('sort', { prop, order, init: true })
     })
     const {
@@ -89,7 +90,6 @@ export default defineComponent({
     const { isGroup, toggleAllSelection, columnRows } = useUtils(
       props as TableHeaderProps<unknown>
     )
-
     instance.state = {
       onColumnsChange,
       onScrollableChange,

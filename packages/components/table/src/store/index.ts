@@ -42,6 +42,9 @@ function useStore<T>() {
   const ns = useNamespace('table')
   type StoreStates = typeof watcher.states
   const mutations = {
+    setMyColumns(states: StoreStates, column: any) {
+      states.myColumns = column
+    },
     setData(states: StoreStates, data: T[]) {
       const dataInstanceChanged = unref(states._data) !== data
       states.data.value = data

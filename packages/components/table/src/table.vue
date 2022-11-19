@@ -66,10 +66,11 @@
         size="small"
         class="export-btn"
         @click="
-          QueryLastOnlyIdExport(
+          testHandler(
             fileName,
             'csv',
             data,
+            store.states.myColumns.value,
             store.states.columns.value
           )
         "
@@ -213,6 +214,7 @@ import defaultProps from './table/defaults'
 import { TABLE_INJECTION_KEY } from './tokens'
 import { hColgroup } from './h-helper'
 import { useScrollbar } from './composables/use-scrollbar'
+import { ExcelUtil } from './export/ExcelUtils'
 import type { UploadRequestOptions } from 'element-plus'
 import type { Table } from './table/defaults'
 
@@ -350,7 +352,36 @@ export default defineComponent({
       }
       fileReader.readAsBinaryString(file)
     }
+    const testHandler = (f, t, data, cls, colunms) => {
+      console.log(cls)
+      const rowsLength = cls.length
+      const colunmsLength = colunms.length
+      const headerList: any = []
+      for (let i = 0; i < rowsLength; i++) {
+        const list = []
+        for (let j = 0; j < colunmsLength; j++) {
+          list.push(false)
+        }
+        headerList.push(list)
+      }
+      for (const [i, cl] of cls.entries()) {
+        for (const element of cl) {
+          for (let k = 0; k < element.rowSpan; k++) {
+            if (headerList[k][i] === false) {
+              headerList[k][i] = element.label
+            }
+          }
+          for (let k = 0; k <= element.colSpan; k++) {
+            if (headerList[i][k] === false) {
+              headerList[i][k] = element.label
+            }
+          }
+        }
+      }
+      console.log(headerList)
+    }
     return {
+      testHandler,
       ns,
       layout,
       store,
