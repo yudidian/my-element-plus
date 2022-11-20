@@ -365,20 +365,39 @@ export default defineComponent({
         headerList.push(list)
       }
       for (const [i, cl] of cls.entries()) {
-        for (const element of cl) {
+        for (const [j, element] of cl.entries()) {
           for (let k = 0; k < element.rowSpan; k++) {
-            if (headerList[k][i] === false) {
-              headerList[k][i] = element.label
+            if (headerList[k + i][i] === false) {
+              headerList[k + i][i] = element.label
             }
           }
-          for (let k = 0; k <= element.colSpan; k++) {
-            if (headerList[i][k] === false) {
-              headerList[i][k] = element.label
+          for (let k = 0; k < element.colSpan; k++) {
+            if (headerList[i][k + j + i] === false) {
+              headerList[i][k + j + i] = element.label
             }
           }
         }
       }
-      console.log(headerList)
+      const newHeaderList: any = []
+      for (let i = 0; i < headerList[0].length; i++) {
+        const list: any = []
+        for (const element of headerList) {
+          list.push(element[i])
+        }
+        newHeaderList.push(list)
+      }
+      const lstSheet = []
+      ExcelUtil.writeHeader(newHeaderList)
+      for (let i = 0, rowIndex = 1; i < data.length; i++, rowIndex++) {
+        let colIndex = 0
+        ExcelUtil.writeCellData(rowIndex, colIndex++, `${i + 1}`)
+        for (let j = 0; j < data[i].length; j++) {
+          ExcelUtil.writeCellData(rowIndex, colIndex++, data[i][j])
+        }
+      }
+      const sheet = ExcelUtil.getDataSheet()
+      lstSheet.push({ sheet, name: 'Sheet' })
+      ExcelUtil.write(lstSheet, `${+Date.now()}.xlsx`)
     }
     return {
       testHandler,
