@@ -34,9 +34,10 @@ function useUtils<T>(store: Store<T>) {
     fileName: string,
     type: string,
     tableData: Array<T>,
+    myColumns: Array<T>,
     tableColumns: Array<T>
   ) => {
-    exportExcel(fileName, type, tableData, tableColumns)
+    exportExcel(fileName, type, tableData, myColumns, tableColumns)
   }
   const importData = (data: any, columns: any) => {
     return importExcel(data, columns)

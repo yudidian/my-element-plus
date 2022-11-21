@@ -56,6 +56,7 @@
             fileName,
             'xlsx',
             data,
+            store.states.myColumns.value,
             store.states.columns.value
           )
         "
@@ -66,7 +67,7 @@
         size="small"
         class="export-btn"
         @click="
-          testHandler(
+          QueryLastOnlyIdExport(
             fileName,
             'csv',
             data,
@@ -214,7 +215,6 @@ import defaultProps from './table/defaults'
 import { TABLE_INJECTION_KEY } from './tokens'
 import { hColgroup } from './h-helper'
 import { useScrollbar } from './composables/use-scrollbar'
-import { ExcelUtil } from './export/ExcelUtils'
 import type { UploadRequestOptions } from 'element-plus'
 import type { Table } from './table/defaults'
 
@@ -352,55 +352,7 @@ export default defineComponent({
       }
       fileReader.readAsBinaryString(file)
     }
-    const testHandler = (f, t, data, cls, colunms) => {
-      console.log(cls)
-      const rowsLength = cls.length
-      const colunmsLength = colunms.length
-      const headerList: any = []
-      for (let i = 0; i < rowsLength; i++) {
-        const list = []
-        for (let j = 0; j < colunmsLength; j++) {
-          list.push(false)
-        }
-        headerList.push(list)
-      }
-      for (const [i, cl] of cls.entries()) {
-        for (const [j, element] of cl.entries()) {
-          for (let k = 0; k < element.rowSpan; k++) {
-            if (headerList[k + i][i] === false) {
-              headerList[k + i][i] = element.label
-            }
-          }
-          for (let k = 0; k < element.colSpan; k++) {
-            if (headerList[i][k + j + i] === false) {
-              headerList[i][k + j + i] = element.label
-            }
-          }
-        }
-      }
-      const newHeaderList: any = []
-      for (let i = 0; i < headerList[0].length; i++) {
-        const list: any = []
-        for (const element of headerList) {
-          list.push(element[i])
-        }
-        newHeaderList.push(list)
-      }
-      const lstSheet = []
-      ExcelUtil.writeHeader(newHeaderList)
-      for (let i = 0, rowIndex = 1; i < data.length; i++, rowIndex++) {
-        let colIndex = 0
-        ExcelUtil.writeCellData(rowIndex, colIndex++, `${i + 1}`)
-        for (let j = 0; j < data[i].length; j++) {
-          ExcelUtil.writeCellData(rowIndex, colIndex++, data[i][j])
-        }
-      }
-      const sheet = ExcelUtil.getDataSheet()
-      lstSheet.push({ sheet, name: 'Sheet' })
-      ExcelUtil.write(lstSheet, `${+Date.now()}.xlsx`)
-    }
     return {
-      testHandler,
       ns,
       layout,
       store,
