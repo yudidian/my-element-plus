@@ -24,7 +24,7 @@ export const exportExcel = (
       }
       headerList.push(list)
     }
-    for (const [i, cl] of cls.entries()) {
+    for (const [i, cl] of myColumns.entries()) {
       for (const [j, element] of cl.entries()) {
         for (let k = 0; k < element.rowSpan; k++) {
           let l = 0

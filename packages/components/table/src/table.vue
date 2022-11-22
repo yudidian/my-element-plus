@@ -51,6 +51,7 @@
         type="primary"
         size="small"
         class="export-btn"
+        :disabled="isEmpty"
         @click="
           QueryLastOnlyIdExport(
             fileName,
@@ -66,6 +67,7 @@
         type="primary"
         size="small"
         class="export-btn"
+        :disabled="isEmpty"
         @click="
           QueryLastOnlyIdExport(
             fileName,
